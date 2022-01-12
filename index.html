@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<title>Spring Boot WebSocket Chat Application | CalliCoder</title>
+</head>
+<body background="18.jpg"
+	style="background-position: center; background-repeat: no-repeat; background-size: cover;">
+	<noscript>
+		<h2>Sorry! Your browser doesn't support Javascript</h2>
+	</noscript>
+
+    <div id = "sse">
+        <a href = "javascript:connect()">Run WebSocket</a>
+    </div>
+	
+	<div style="text-align:center; margin-top: 150px;">
+		<h1 style="font-size: 4em;">
+
+
+		</h1>
+	</div>
+	
+	<div id ="notificationId">
+		
+	</div>
+	 
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+	<script>
+		function connect() {
+		
+			var stompClient = null;
+			var notifications = 0;
+
+			var colors = [
+				'#2196F3', '#32c787', '#00BCD4', '#ff5652',
+				'#ffc107', '#ff85af', '#FF9800', '#39bbb0'
+			];
+			if(true) {
+				var socket = new SockJS('http://localhost:8080/socket');
+				stompClient = Stomp.over(socket);
+
+				stompClient.connect({}, onConnected, onError);
+			}
+		
+
+
+			function onConnected() {
+				
+				// Subscribe to the Public Topic
+				stompClient.subscribe('/topic/notification', notifications => {
+
+							// Update notifications attribute with the recent messsage sent from the server
+							this.notifications = JSON.parse(notifications.body).count;
+							console.log(this.notifications)
+							document.getElementById("notificationId").innerHTML = this.notifications;
+						});
+
+			}
+			function onError(error) {
+				connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+				connectingElement.style.color = 'red';
+			}
+		}
+	</script>
+</body>
+</html>
